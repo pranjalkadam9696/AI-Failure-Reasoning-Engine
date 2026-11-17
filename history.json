@@ -1,0 +1,22 @@
+[
+    {
+        "problem": "My model is giving wrong predictions",
+        "failure_type": "Wrong Prediction",
+        "confidence": "60%"
+    },
+    {
+        "problem": "My dataset contains missing values",
+        "failure_type": "Missing Values",
+        "confidence": "60%"
+    },
+    {
+        "problem": "My dataset has class imbalance and one class dominates the dataset",
+        "failure_type": "Data Imbalance",
+        "confidence": "60%"
+    },
+    {
+        "problem": "My training accuracy is high but testing accuracy is low",
+        "failure_type": "Overfitting",
+        "confidence": "95%"
+    }
+]

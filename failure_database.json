@@ -1,0 +1,140 @@
+{
+  "overfitting": {
+    "description": "The model performs very well on training data but poorly on new data.",
+    "causes": [
+      "Insufficient training data",
+      "Model is too complex",
+      "Training for too many epochs"
+    ],
+    "solutions": [
+      "Collect more training data",
+      "Use regularization",
+      "Reduce model complexity",
+      "Use cross-validation"
+    ]
+  },
+
+  "underfitting": {
+    "description": "The model is too simple to learn the important patterns in the data.",
+    "causes": [
+      "Model is too simple",
+      "Insufficient training",
+      "Insufficient features"
+    ],
+    "solutions": [
+      "Add more useful features",
+      "Increase model complexity",
+      "Train the model for more time"
+    ]
+  },
+
+  "low_accuracy": {
+    "description": "The model gives a low percentage of correct predictions.",
+    "causes": [
+      "Poor quality data",
+      "Insufficient training data",
+      "Wrong model selection"
+    ],
+    "solutions": [
+      "Clean the data",
+      "Collect more data",
+      "Try a better model",
+      "Perform feature engineering"
+    ]
+  },
+
+  "data_imbalance": {
+    "description": "Some classes have significantly more samples than other classes.",
+    "causes": [
+      "One class has too many samples",
+      "Some classes have very few samples"
+    ],
+    "solutions": [
+      "Use oversampling",
+      "Use undersampling",
+      "Use SMOTE"
+    ]
+  },
+
+  "missing_values": {
+    "description": "Some values are missing from the dataset.",
+    "causes": [
+      "Data collection problems",
+      "Incomplete records"
+    ],
+    "solutions": [
+      "Fill missing values",
+      "Remove unnecessary rows or columns",
+      "Use mean or median imputation"
+    ]
+  },
+
+  "outliers": {
+    "description": "Some data points are significantly different from the other values.",
+    "causes": [
+      "Data entry errors",
+      "Measurement errors",
+      "Rare events"
+    ],
+    "solutions": [
+      "Detect outliers",
+      "Remove invalid values",
+      "Use data transformation or scaling"
+    ]
+  },
+
+  "data_leakage": {
+    "description": "Information from the test data or future data is accidentally used during training.",
+    "causes": [
+      "Incorrect train-test splitting",
+      "Using test information during training"
+    ],
+    "solutions": [
+      "Perform a proper train-test split",
+      "Apply preprocessing correctly",
+      "Keep test data separate"
+    ]
+  },
+
+  "wrong_prediction": {
+    "description": "The model produces an incorrect prediction for an input.",
+    "causes": [
+      "Poor training data",
+      "Wrong features",
+      "Model limitations"
+    ],
+    "solutions": [
+      "Check the training data",
+      "Improve the features",
+      "Retrain the model"
+    ]
+  },
+
+  "high_training_time": {
+    "description": "The model takes too much time to train.",
+    "causes": [
+      "Dataset is too large",
+      "Model is too complex",
+      "Limited computational resources"
+    ],
+    "solutions": [
+      "Optimize the dataset",
+      "Reduce model complexity",
+      "Improve computational resources"
+    ]
+  },
+
+  "model_bias": {
+    "description": "The model produces unfair or biased predictions for certain classes or groups.",
+    "causes": [
+      "Biased training data",
+      "Unbalanced dataset",
+      "Poor feature selection"
+    ],
+    "solutions": [
+      "Balance the training data",
+      "Evaluate model bias",
+      "Use fairness techniques"
+    ]
+  }
+}

@@ -1,0 +1,1067 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Failure Reasoning Engine</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #030d1c;
+            color: #e8f1ff;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: #06152a;
+            border-bottom: 1px solid #16365a;
+            padding: 18px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, #874bff, #139dff);
+            border-radius: 14px;
+            padding: 12px;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        .brand h2 {
+            font-size: 21px;
+        }
+
+        .brand p, .muted {
+            color: #9cb5d4;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .layout {
+            display: flex;
+            min-height: calc(100vh - 75px);
+        }
+
+        aside {
+            width: 230px;
+            flex-shrink: 0;
+            background: #041123;
+            border-right: 1px solid #16365a;
+            padding: 28px 16px;
+        }
+
+        .nav-title {
+            color: #7897bd;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin: 12px 12px 20px;
+        }
+
+        aside a {
+            display: block;
+            padding: 14px;
+            margin-bottom: 8px;
+            color: #c8d9f0;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        aside a:hover {
+            background: linear-gradient(100deg, #4927a6, #103e79);
+            color: white;
+        }
+
+        main {
+            flex: 1;
+            min-width: 0;
+            padding: 26px;
+        }
+
+        section {
+            scroll-margin-top: 95px;
+            margin-bottom: 24px;
+        }
+
+        .hero, .panel, .stat-card, .chart-card {
+            background: linear-gradient(145deg, #0a1d34, #071426);
+            border: 1px solid #173d63;
+            border-radius: 17px;
+        }
+
+        .hero {
+            padding: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .eyebrow {
+            color: #63baff;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .hero h1 {
+            font-size: clamp(26px, 3vw, 39px);
+            margin-bottom: 12px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #a16aff, #19baff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            color: #a9c1df;
+            line-height: 1.7;
+        }
+
+        .hero-icon {
+            font-size: 75px;
+            padding: 22px;
+            border: 1px solid #3158a2;
+            border-radius: 25px;
+            background: #102a50;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 15px;
+            margin-top: 22px;
+        }
+
+        .stat-card {
+            padding: 22px;
+        }
+
+        .stat-card p {
+            color: #9cb7d9;
+            font-size: 13px;
+        }
+
+        .stat-card h2 {
+            font-size: 30px;
+            margin: 12px 0 7px;
+        }
+
+        .green {
+            color: #20e0b0;
+        }
+
+        .purple {
+            color: #a881ff;
+        }
+
+        .blue {
+            color: #25baff;
+        }
+
+        .panel {
+            padding: 24px;
+        }
+
+        .panel h2, .chart-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .panel-subtitle {
+            color: #9cb5d4;
+            font-size: 13px;
+            margin-bottom: 22px;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(260px, 0.9fr);
+            gap: 22px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 125px;
+            background: #030e1e;
+            border: 1px solid #20528b;
+            border-radius: 12px;
+            color: white;
+            padding: 16px;
+            font-size: 15px;
+            resize: vertical;
+            margin-top: 15px;
+        }
+
+        textarea:focus {
+            outline: 2px solid #684cff;
+        }
+
+        button, .button {
+            display: inline-block;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 19px;
+            color: white;
+            background: linear-gradient(100deg, #8648ff, #168eff);
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        button:hover, .button:hover {
+            filter: brightness(1.15);
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .examples {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .example {
+            text-align: left;
+            width: 100%;
+            background: #06182d;
+            border: 1px solid #174269;
+            line-height: 1.5;
+        }
+
+        .example small {
+            display: block;
+            color: #a4bddb;
+            font-weight: normal;
+        }
+
+        .result-summary {
+            display: grid;
+            grid-template-columns: 100px 1fr 150px;
+            align-items: center;
+            gap: 20px;
+            padding: 22px;
+            background: #041528;
+            border: 1px solid #1a4d75;
+            border-radius: 13px;
+            margin: 20px 0;
+        }
+
+        .score-circle {
+            width: 90px;
+            height: 90px;
+            border: 7px solid #20d3a6;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .score-circle small {
+            font-size: 10px;
+            font-weight: normal;
+        }
+
+        .failure-name {
+            color: #28b9ff;
+            font-size: 23px;
+            margin-top: 8px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .result-box {
+            padding: 18px;
+            background: #07182b;
+            border: 1px solid #173d60;
+            border-radius: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .result-box h3 {
+            color: #48bcff;
+            font-size: 16px;
+            margin-bottom: 13px;
+        }
+
+        .result-box p, .result-box li {
+            color: #c6d7ed;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .result-box ul {
+            padding-left: 20px;
+        }
+
+        .result-box li {
+            margin-bottom: 6px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .chart-card {
+            padding: 22px;
+            min-width: 0;
+        }
+
+        .chart-card p {
+            color: #9cb5d4;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 310px;
+            width: 100%;
+        }
+
+        .breakdown-list {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .breakdown-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .bar-bg {
+            height: 7px;
+            background: #142c47;
+            border-radius: 10px;
+            margin-top: 7px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8a52ff, #15b7ff);
+            border-radius: 10px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-item {
+            background: #06172a;
+            border: 1px solid #183d60;
+            border-radius: 11px;
+            padding: 17px;
+            overflow-wrap: anywhere;
+        }
+
+        .history-item p {
+            color: #afc5df;
+            line-height: 1.7;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .history-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .pill {
+            color: #37e2bd;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .clear-form {
+            margin-top: 18px;
+            text-align: right;
+        }
+
+        .clear-button {
+            background: #3b1d46;
+            border: 1px solid #9b52dd;
+        }
+
+        footer {
+            padding: 22px;
+            text-align: center;
+            color: #8ba6c7;
+            border-top: 1px solid #173653;
+            font-size: 13px;
+        }
+
+        .empty {
+            padding: 25px;
+            text-align: center;
+            color: #9cb5d4;
+            border: 1px dashed #24496c;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 1050px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .workspace, .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            header {
+                padding: 14px;
+            }
+
+            .brand h2 {
+                font-size: 16px;
+            }
+
+            .layout {
+                display: block;
+            }
+
+            aside {
+                width: 100%;
+                padding: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                border-right: 0;
+                border-bottom: 1px solid #173653;
+            }
+
+            .nav-title {
+                display: none;
+            }
+
+            aside a {
+                padding: 10px;
+                margin: 0;
+                font-size: 13px;
+            }
+
+            main {
+                padding: 13px;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero-icon {
+                display: none;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-card h2 {
+                font-size: 25px;
+            }
+
+            .panel {
+                padding: 16px;
+            }
+
+            .result-summary {
+                grid-template-columns: 75px 1fr;
+                gap: 12px;
+                padding: 14px;
+            }
+
+            .score-circle {
+                width: 70px;
+                height: 70px;
+                border-width: 5px;
+            }
+
+            .result-summary > div:last-child {
+                grid-column: 2;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-wrap {
+                height: 260px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+            <h2>AI Failure Reasoning Engine</h2>
+            <p>Detect &nbsp; • &nbsp; Analyze &nbsp; • &nbsp; Solve</p>
+        </div>
+    </div>
+    <span class="muted">✦ AI&DS Student</span>
+</header>
+
+<div class="layout">
+
+    <aside>
+        <div class="nav-title">WORKSPACE</div>
+        <a href="#dashboard">⌂ &nbsp; Dashboard</a>
+        <a href="#analyze">⌕ &nbsp; Analyze</a>
+        <a href="#analytics">▥ &nbsp; Analytics</a>
+        <a href="#history">◷ &nbsp; History</a>
+        <a href="#about">ⓘ &nbsp; About</a>
+    </aside>
+
+    <main>
+
+        <section id="dashboard">
+            <div class="hero">
+                <div>
+                    <div class="eyebrow">WELCOME TO YOUR AI WORKSPACE</div>
+                    <h1>AI Failure <span class="gradient-text">Reasoning Engine</span></h1>
+                    <p>Detect AI/ML failures, understand their causes, and find the right solutions.</p>
+                    <br>
+                    <a href="#analyze" class="button">＋ Start New Analysis</a>
+                </div>
+                <div class="hero-icon">✧</div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <p>Total Analyses</p>
+                    <h2>{{ total_analyses }}</h2>
+                    <span class="green">Saved history records</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>Failure Types Detected</p>
+                    <h2>{{ chart_data|length }}</h2>
+                    <span class="purple">Different detected types</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>Recent Analyses</p>
+                    <h2>{{ [history|length, 5]|min }}</h2>
+                    <span class="blue">Latest saved records</span>
+                </div>
+
+                <div class="stat-card">
+                    <p>History Capacity</p>
+                    <h2>{{ history|length }} <span class="muted">/ 100</span></h2>
+                    <span class="green">Recent records retained</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="analyze" class="workspace">
+
+            <div>
+                <div class="panel">
+                    <h2>✦ Describe your AI/ML problem</h2>
+                    <p class="panel-subtitle">Describe your model, data, training process or results.</p>
+
+                    <form method="POST" action="#result">
+                        <textarea
+                            name="problem"
+                            id="problem"
+                            maxlength="500"
+                            required
+                            placeholder="Example: My training accuracy is high but testing accuracy is low."
+                        >{{ problem }}</textarea>
+
+                        <div class="form-footer">
+                            <span class="muted"><span id="charCount">0</span>/500</span>
+                            <button type="submit">➤ Analyze Failure</button>
+                        </div>
+                    </form>
+                </div>
+
+                {% if result %}
+                <section id="result" class="panel" style="margin-top: 20px;">
+                    <h2>▥ Analysis Result</h2>
+                    <p class="panel-subtitle">Detailed analysis of your AI/ML problem.</p>
+
+                    <div class="result-summary">
+                        <div class="score-circle">
+                            {{ result.confidence }}
+                            <small>Confidence</small>
+                        </div>
+
+                        <div>
+                            <span class="muted">Failure Type</span>
+                            <h2 class="failure-name">{{ result.failure }}</h2>
+                        </div>
+
+                        <div>
+                            <span class="muted">Confidence Score</span>
+                            <h2 class="green">{{ result.confidence }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="result-grid">
+                        <div class="result-box">
+                            <h3>▣ Evidence</h3>
+                            {% if result.evidence is string %}
+                                <p>{{ result.evidence }}</p>
+                            {% else %}
+                                <ul>
+                                    {% for item in result.evidence %}
+                                    <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-box">
+                            <h3>❖ Reasoning</h3>
+                            {% if result.reasoning is string %}
+                                <p>{{ result.reasoning }}</p>
+                            {% else %}
+                                <ul>
+                                    {% for item in result.reasoning %}
+                                    <li>{{ item }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-box">
+                            <h3>⚑ Possible Causes</h3>
+                            {% if result.causes %}
+                            <ul>
+                                {% for item in result.causes %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p>No specific causes identified.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-box">
+                            <h3>♧ Recommended Solutions</h3>
+                            {% if result.solutions %}
+                            <ul>
+                                {% for item in result.solutions %}
+                                <li>{{ item }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p>Try providing more details about the failure.</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-box" style="grid-column: 1 / -1;">
+                            <h3>ⓘ Description</h3>
+                            <p>{{ result.description }}</p>
+                        </div>
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="panel">
+                    <h2>♧ Quick Examples</h2>
+                    <p class="panel-subtitle">Choose an example to try.</p>
+
+                    <div class="examples">
+                        <button type="button" class="example"
+                            onclick="useExample('My training accuracy is high but testing accuracy is low')">
+                            🟣 Overfitting
+                            <small>High training accuracy, low testing accuracy</small>
+                        </button>
+
+                        <button type="button" class="example"
+                            onclick="useExample('My model is too simple and has low accuracy on training data')">
+                            🔵 Underfitting
+                            <small>Low accuracy on training data</small>
+                        </button>
+
+                        <button type="button" class="example"
+                            onclick="useExample('My dataset has class imbalance and one class dominates the dataset')">
+                            🟢 Data Imbalance
+                            <small>One class dominates the dataset</small>
+                        </button>
+
+                        <button type="button" class="example"
+                            onclick="useExample('My dataset contains missing values')">
+                            🟠 Missing Values
+                            <small>Dataset contains null values</small>
+                        </button>
+
+                        <button type="button" class="example"
+                            onclick="useExample('My model is giving wrong predictions')">
+                            🔴 Wrong Prediction
+                            <small>Model gives incorrect outputs</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 20px;">
+                    <h2>◷ History Overview</h2>
+                    <p class="panel-subtitle">Latest saved records</p>
+
+                    {% if history %}
+                    <div class="history-list">
+                        {% for item in history[:5] %}
+                        <div class="history-item">
+                            <div class="history-top">
+                                <strong>{{ item.failure_type }}</strong>
+                                <span class="pill">{{ item.confidence }}</span>
+                            </div>
+                            <p>{{ item.problem|truncate(85) }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <br>
+                    <a href="#history" class="button">View All History →</a>
+                    {% else %}
+                    <div class="empty">No saved analyses yet.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <section id="analytics" class="panel">
+            <div class="history-top">
+                <div>
+                    <div class="eyebrow">PERFORMANCE INSIGHTS</div>
+                    <h2>Analytics Overview</h2>
+                    <p class="panel-subtitle">Visualize your saved AI/ML failure analyses.</p>
+                </div>
+                <span class="green">● History Connected</span>
+            </div>
+
+            <div class="charts-grid">
+
+                <div class="chart-card">
+                    <h3>Failure Type Distribution</h3>
+                    <p>Number of times each failure type was detected.</p>
+                    <div class="chart-wrap">
+                        <canvas id="failureBarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3>Failure Breakdown</h3>
+                    <p>Percentage share of each failure type in saved history.</p>
+                    <div class="chart-wrap">
+                        <canvas id="failureDoughnutChart"></canvas>
+                    </div>
+
+                    <div id="breakdownList" class="breakdown-list"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="history" class="panel">
+            <div class="history-top">
+                <div>
+                    <h2>◷ Recent History</h2>
+                    <p class="panel-subtitle">Your latest saved failure analyses.</p>
+                </div>
+            </div>
+
+            {% if history %}
+            <div class="history-list">
+                {% for item in history %}
+                <div class="history-item">
+                    <div class="history-top">
+                        <strong>{{ loop.index }}. {{ item.failure_type }}</strong>
+                        <span class="pill">{{ item.confidence }}</span>
+                    </div>
+                    <p><strong>Problem:</strong> {{ item.problem }}</p>
+                    <p><strong>Failure Type:</strong> {{ item.failure_type }}</p>
+                    <p><strong>Confidence:</strong> {{ item.confidence }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <form class="clear-form" method="POST" action="{{ url_for('clear_history') }}"
+                  onsubmit="return confirm('Are you sure you want to clear all history?');">
+                <button type="submit" class="clear-button">Clear History</button>
+            </form>
+            {% else %}
+            <div class="empty">Your history is empty. Analyze a problem to create your first record.</div>
+            {% endif %}
+        </section>
+
+        <section id="about" class="panel">
+            <h2>About This Project</h2>
+            <p class="panel-subtitle">
+                AI Failure Reasoning Engine helps identify common AI/ML model failures,
+                understand possible causes, and explore recommended solutions.
+            </p>
+            <p>Built using Python, Flask, HTML, CSS, JavaScript and Chart.js.</p>
+        </section>
+
+    </main>
+</div>
+
+<footer>
+    AI Failure Reasoning Engine &nbsp; | &nbsp; Built with Python and Flask
+</footer>
+
+<script>
+    const problemInput = document.getElementById("problem");
+    const charCount = document.getElementById("charCount");
+
+    function updateCount() {
+        charCount.textContent = problemInput.value.length;
+    }
+
+    problemInput.addEventListener("input", updateCount);
+    updateCount();
+
+    function useExample(text) {
+        problemInput.value = text;
+        updateCount();
+        document.getElementById("analyze").scrollIntoView({
+            behavior: "smooth"
+        });
+        problemInput.focus();
+    }
+
+    // Chart data is supplied by Flask from history.json.
+    const chartData = {{ chart_data|tojson }};
+
+    const labels = chartData.map(item => item.name);
+    const values = chartData.map(item => Number(item.count));
+    const total = values.reduce((sum, value) => sum + value, 0);
+
+    const chartColors = [
+        "#8957f5",
+        "#13afea",
+        "#20c997",
+        "#f5a623",
+        "#f04491",
+        "#48a6ff",
+        "#ff6b6b",
+        "#8bd450"
+    ];
+
+    Chart.register(ChartDataLabels);
+
+    // Bar chart: counts for each failure type.
+    new Chart(document.getElementById("failureBarChart"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Number of Analyses",
+                data: values,
+                backgroundColor: labels.map(
+                    (_, index) => chartColors[index % chartColors.length]
+                ),
+                borderRadius: 8,
+                maxBarThickness: 65
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                datalabels: {
+                    color: "#ffffff",
+                    anchor: "end",
+                    align: "top",
+                    font: {
+                        weight: "bold"
+                    },
+                    formatter: value => value
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#b9cee8"
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: "#b9cee8",
+                        precision: 0
+                    },
+                    grid: {
+                        color: "rgba(150,180,220,0.12)"
+                    }
+                }
+            }
+        }
+    });
+
+    // Doughnut chart: show percentage directly on every segment.
+    new Chart(document.getElementById("failureDoughnutChart"), {
+        type: "doughnut",
+        data: {
+            labels: labels,
+            datasets: [{
+                data: values,
+                backgroundColor: labels.map(
+                    (_, index) => chartColors[index % chartColors.length]
+                ),
+                borderColor: "#071426",
+                borderWidth: 3,
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "58%",
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        color: "#c8d9f0",
+                        padding: 16,
+                        boxWidth: 14
+                    }
+                },
+                datalabels: {
+                    display: total > 0,
+                    color: "#ffffff",
+                    font: {
+                        weight: "bold",
+                        size: 14
+                    },
+                    textStrokeColor: "rgba(0,0,0,0.35)",
+                    textStrokeWidth: 2,
+                    formatter: (value) => {
+                        const percentage = total > 0
+                            ? (value / total) * 100
+                            : 0;
+                        return percentage.toFixed(1) + "%";
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const value = Number(context.raw);
+                            const percentage = total > 0
+                                ? ((value / total) * 100).toFixed(1)
+                                : "0.0";
+
+                            return " " + context.label + ": " +
+                                value + " analyses (" + percentage + "%)";
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Percentage breakdown list under the doughnut chart.
+    const breakdownList = document.getElementById("breakdownList");
+
+    if (total === 0) {
+        breakdownList.innerHTML =
+            '<div class="empty">No analysis data yet. Analyze a problem to see percentages.</div>';
+    } else {
+        chartData.forEach((item, index) => {
+            const count = Number(item.count);
+            const percentage = ((count / total) * 100).toFixed(1);
+            const color = chartColors[index % chartColors.length];
+
+            const row = document.createElement("div");
+            row.className = "breakdown-row";
+
+            const left = document.createElement("div");
+
+            const name = document.createElement("strong");
+            name.textContent = item.name;
+
+            const barBackground = document.createElement("div");
+            barBackground.className = "bar-bg";
+
+            const bar = document.createElement("div");
+            bar.className = "bar-fill";
+            bar.style.width = percentage + "%";
+            bar.style.background = color;
+
+            barBackground.appendChild(bar);
+            left.appendChild(name);
+            left.appendChild(barBackground);
+
+            const right = document.createElement("strong");
+            right.style.color = color;
+            right.textContent = percentage + "%";
+
+            row.appendChild(left);
+            row.appendChild(right);
+            breakdownList.appendChild(row);
+        });
+    }
+</script>
+
+</body>
+</html>
